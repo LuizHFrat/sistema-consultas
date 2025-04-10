@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ClientesModule } from './clientes/clientes.module';
 import { MedicosModule } from './medicos/medicos.module';
@@ -18,7 +17,6 @@ import { User } from './users/user.entity';
       entities: [User, Cliente, Medico, Consulta],
       synchronize: true, // Em produção deixe como falso!
     }),
-    AuthModule,
     UsersModule,
     ClientesModule,
     MedicosModule,

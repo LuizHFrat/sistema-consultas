@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Consulta } from './consulta.entity';
@@ -19,47 +19,50 @@ export class ConsultasService {
   ) {}
 
   async create(data: {
-    clienteId: number;
-    medicoId: number;
+    clienteId: string;
+    medicoId: string;
     data: Date;
   }): Promise<Consulta> {
-    const cliente = await this.clienteRepository.findOneBy({ id: data.clienteId });
-    if (!cliente) throw new NotFoundException('Cliente não encontrado');
+    const cliente = await this.clienteRepository.findOne({
+      where: { id: data.clienteId },
+    });
+    const medico = await this.medicoRepository.findOne({
+      where: { id: data.medicoId },
+    });
 
-    const medico = await this.medicoRepository.findOneBy({ id: data.medicoId });
-    if (!medico) throw new NotFoundException('Médico não encontrado');
+    if (!cliente || !medico) {
+      throw new Error('Cliente ou médico não encontrado');
+    }
 
     const consulta = this.consultaRepository.create({
+      data: data.data,
       cliente,
       medico,
-      data: data.data,
     });
 
     return this.consultaRepository.save(consulta);
   }
 
-  async findAll(): Promise<Consulta[]> {
-    return this.consultaRepository.find({
-      relations: ['cliente', 'medico'],
-    });
+  findAll(): Promise<Consulta[]> {
+    return this.consultaRepository.find({ relations: ['cliente', 'medico'] });
   }
 
-  async findOne(id: number): Promise<Consulta> {
+  async findOne(id: string): Promise<Consulta> {
     const consulta = await this.consultaRepository.findOne({
       where: { id },
       relations: ['cliente', 'medico'],
     });
 
     if (!consulta) {
-      throw new NotFoundException('Consulta não encontrada');
+      throw new Error('Consulta não encontrada');
     }
 
     return consulta;
   }
 
   async update(
-    id: number,
-    data: { clienteId?: number; medicoId?: number; data?: Date },
+    id: string,
+    data: { clienteId?: string; medicoId?: string; data?: Date },
   ): Promise<Consulta> {
     const consulta = await this.consultaRepository.findOne({
       where: { id },
@@ -67,18 +70,22 @@ export class ConsultasService {
     });
 
     if (!consulta) {
-      throw new NotFoundException('Consulta não encontrada');
+      throw new Error('Consulta não encontrada');
     }
 
     if (data.clienteId) {
-      const cliente = await this.clienteRepository.findOneBy({ id: data.clienteId });
-      if (!cliente) throw new NotFoundException('Cliente não encontrado');
+      const cliente = await this.clienteRepository.findOne({
+        where: { id: data.clienteId },
+      });
+      if (!cliente) throw new Error('Cliente não encontrado');
       consulta.cliente = cliente;
     }
 
     if (data.medicoId) {
-      const medico = await this.medicoRepository.findOneBy({ id: data.medicoId });
-      if (!medico) throw new NotFoundException('Médico não encontrado');
+      const medico = await this.medicoRepository.findOne({
+        where: { id: data.medicoId },
+      });
+      if (!medico) throw new Error('Médico não encontrado');
       consulta.medico = medico;
     }
 
@@ -89,10 +96,11 @@ export class ConsultasService {
     return this.consultaRepository.save(consulta);
   }
 
-  async delete(id: number): Promise<void> {
-    const consulta = await this.consultaRepository.findOneBy({ id });
+  async delete(id: string): Promise<void> {
+    const consulta = await this.consultaRepository.findOne({ where: { id } });
+
     if (!consulta) {
-      throw new NotFoundException('Consulta não encontrada');
+      throw new Error('Consulta não encontrada');
     }
 
     await this.consultaRepository.remove(consulta);

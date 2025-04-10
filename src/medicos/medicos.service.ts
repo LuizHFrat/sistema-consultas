@@ -1,48 +1,38 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Medico } from './medico.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class MedicosService {
   constructor(
     @InjectRepository(Medico)
-    private medicosRepository: Repository<Medico>,
+    private readonly medicoRepository: Repository<Medico>,
   ) {}
 
-  async findAll(): Promise<Medico[]> {
-    return this.medicosRepository.find();
+  create(data: Partial<Medico>): Promise<Medico> {
+    const medico = this.medicoRepository.create(data);
+    return this.medicoRepository.save(medico);
   }
 
-  async findOne(id: number): Promise<Medico> {
-    const medico = await this.medicosRepository.findOneBy({ id });
-    if (!medico) {
-      throw new NotFoundException('Médico não encontrado');
-    }
+  findAll(): Promise<Medico[]> {
+    return this.medicoRepository.find();
+  }
+
+  async findOne(id: string): Promise<Medico> {
+    const medico = await this.medicoRepository.findOne({ where: { id } });
+    if (!medico) throw new Error('Médico não encontrado');
     return medico;
   }
 
-  async create(data: Partial<Medico>): Promise<Medico> {
-    const medico = this.medicosRepository.create(data);
-    return this.medicosRepository.save(medico);
-  }
-
-  async update(id: number, data: Partial<Medico>): Promise<Medico> {
-    const medico = await this.medicosRepository.findOneBy({ id });
-    if (!medico) {
-      throw new NotFoundException('Médico não encontrado');
-    }
-
+  async update(id: string, data: Partial<Medico>): Promise<Medico> {
+    const medico = await this.findOne(id);
     Object.assign(medico, data);
-    return this.medicosRepository.save(medico);
+    return this.medicoRepository.save(medico);
   }
 
-  async delete(id: number): Promise<void> {
-    const medico = await this.medicosRepository.findOneBy({ id });
-    if (!medico) {
-      throw new NotFoundException('Médico não encontrado');
-    }
-
-    await this.medicosRepository.remove(medico);
+  async delete(id: string): Promise<void> {
+    const medico = await this.findOne(id);
+    await this.medicoRepository.remove(medico);
   }
 }

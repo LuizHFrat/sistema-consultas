@@ -1,48 +1,38 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Cliente } from './cliente.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ClientesService {
   constructor(
     @InjectRepository(Cliente)
-    private clientesRepository: Repository<Cliente>,
+    private readonly clienteRepository: Repository<Cliente>,
   ) {}
 
-  async findAll(): Promise<Cliente[]> {
-    return this.clientesRepository.find();
+  create(data: Partial<Cliente>): Promise<Cliente> {
+    const cliente = this.clienteRepository.create(data);
+    return this.clienteRepository.save(cliente);
   }
 
-  async findOne(id: number): Promise<Cliente> {
-    const cliente = await this.clientesRepository.findOneBy({ id });
-    if (!cliente) {
-      throw new NotFoundException('Cliente não encontrado');
-    }
+  findAll(): Promise<Cliente[]> {
+    return this.clienteRepository.find();
+  }
+
+  async findOne(id: string): Promise<Cliente> {
+    const cliente = await this.clienteRepository.findOne({ where: { id } });
+    if (!cliente) throw new Error('Cliente não encontrado');
     return cliente;
   }
 
-  async create(data: Partial<Cliente>): Promise<Cliente> {
-    const cliente = this.clientesRepository.create(data);
-    return this.clientesRepository.save(cliente);
-  }
-
-  async update(id: number, data: Partial<Cliente>): Promise<Cliente> {
-    const cliente = await this.clientesRepository.findOneBy({ id });
-    if (!cliente) {
-      throw new NotFoundException('Cliente não encontrado');
-    }
-
+  async update(id: string, data: Partial<Cliente>): Promise<Cliente> {
+    const cliente = await this.findOne(id);
     Object.assign(cliente, data);
-    return this.clientesRepository.save(cliente);
+    return this.clienteRepository.save(cliente);
   }
 
-  async delete(id: number): Promise<void> {
-    const cliente = await this.clientesRepository.findOneBy({ id });
-    if (!cliente) {
-      throw new NotFoundException('Cliente não encontrado');
-    }
-
-    await this.clientesRepository.remove(cliente);
+  async delete(id: string): Promise<void> {
+    const cliente = await this.findOne(id);
+    await this.clienteRepository.remove(cliente);
   }
 }

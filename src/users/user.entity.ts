@@ -10,12 +10,12 @@ export class User {
   @IsUUID()
   uuid_user: string;
 
-  @Column({ unique: true })
+  @Column()
   email: string;
 
   @Column()
   nome: string;
 
-  @Column({ type: 'int', default: UserRole.INTERN })
+  @Column()
   role: UserRole;
 }

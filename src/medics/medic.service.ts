@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Medic } from './medic.entity';
 import { Repository } from 'typeorm';
-import { CreateMedicDto, UpdateMedicDto } from './dto/medic.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateMedicDto } from './dto/medic.dto';
+import { UpdateMedicDto } from './dto/update-medic.dto';
 
 @Injectable()
-export class MedicsService {
+export class MedicService {
   constructor(
     @InjectRepository(Medic)
     private readonly medicRepository: Repository<Medic>,
@@ -40,7 +41,7 @@ export class MedicsService {
     return medic;
   }
 
-  async update(uuid: string, data: Partial<UpdateMedicDto>): Promise<Medic> {
+  async update(uuid: string, data: UpdateMedicDto): Promise<Medic> {
     const medic = await this.findOne(uuid);
     Object.assign(medic, data);
     return this.medicRepository.save(medic);

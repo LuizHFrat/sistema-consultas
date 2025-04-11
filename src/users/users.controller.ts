@@ -1,14 +1,7 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Patch,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User, UserRole } from './user.entity';
+import { User } from './user.entity';
+import { UserRole } from 'src/shared/helpers/user-role.enum';
 
 @Controller('users')
 export class UsersController {
@@ -34,7 +27,7 @@ export class UsersController {
     @Param('id') id: string,
     @Body() data: { role: UserRole },
   ): Promise<User> {
-    return this.usersService.updateRole(id, data.role);
+    return this.usersService.setRole(id, data.role);
   }
 
   @Delete(':id')

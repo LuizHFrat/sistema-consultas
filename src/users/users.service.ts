@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User, UserRole } from './user.entity';
+import { User} from './user.entity';
+import { UserRole } from 'src/shared/helpers/user-role.enum';
 
 @Injectable()
 export class UsersService {
@@ -35,7 +36,7 @@ export class UsersService {
     const user = await this.findOne(id);
     await this.usersRepository.remove(user);
   }
-
+  
   async setRole(id: string, role: UserRole): Promise<User> {
     const user = await this.findOne(id);
     user.role = role;
@@ -44,7 +45,7 @@ export class UsersService {
 
   async removeRole(id: string): Promise<User> {
     const user = await this.findOne(id);
-    user.role = UserRole.ESTAGIARIO; // ou outro valor padrão
+    user.role = UserRole.INTERN;
     return this.usersRepository.save(user);
   }
 

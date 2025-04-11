@@ -1,6 +1,6 @@
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { IsUUID } from 'class-validator';
 import { UserRole } from 'src/shared/helpers/user-role.enum';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class User {
@@ -16,6 +16,6 @@ export class User {
   @Column()
   nome: string;
 
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.INTERN })
+  @Column({ type: 'int', default: UserRole.INTERN })
   role: UserRole;
 }

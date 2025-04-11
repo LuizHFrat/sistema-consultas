@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
-import { ClientesModule } from './clientes/clientes.module';
-import { MedicosModule } from './medicos/medicos.module';
-import { ConsultasModule } from './consultas/consultas.module';
-import { Cliente } from './clientes/cliente.entity';
-import { Medico } from './medicos/medico.entity';
-import { Consulta } from './consultas/consulta.entity';
+import { ClientsModule } from './clients/clients.module';
+import { MedicsModule } from './medics/medics.module';
+import { ConsultationModule } from './consultas/consultation.module';
+import { Client } from './clients/client.entity';
+import { Medic } from './medics/medic.entity';
+import { Consultation } from './consultas/consultation.entity';
 import { User } from './users/user.entity';
 
 @Module({
@@ -14,13 +14,13 @@ import { User } from './users/user.entity';
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'db.sqlite',
-      entities: [User, Cliente, Medico, Consulta],
+      entities: [User, Client, Medic, Consultation],
       synchronize: true, // Em produção deixe como falso!
     }),
     UsersModule,
-    ClientesModule,
-    MedicosModule,
-    ConsultasModule,
+    ClientsModule,
+    MedicsModule,
+    ConsultationModule,
   ],
 })
 export class AppModule {}

@@ -1,9 +1,13 @@
+import { IsUUID } from 'class-validator';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class Cliente {
-  @PrimaryGeneratedColumn('uuid')
+export class Client {
+  @PrimaryGeneratedColumn()
   id: string;
+
+  @IsUUID()
+  uuid_client: string;
 
   @Column()
   nome: string;

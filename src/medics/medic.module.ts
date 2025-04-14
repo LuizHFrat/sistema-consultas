@@ -9,4 +9,4 @@ import { MedicController } from './medic.controller';
   providers: [MedicService],
   controllers: [MedicController],
 })
-export class MedicsModule {}
+export class MedicModule {}
